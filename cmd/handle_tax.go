@@ -12,8 +12,8 @@ import (
 
 func (s *server) handleTax() http.HandlerFunc {
 	type response struct {
-		Type string   `json:"type"`
-		Data tax.Data `json:"data"`
+		Type responseType `json:"type"`
+		Data tax.Data     `json:"data"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		fn := fmt.Sprintf("%s%s.json", s.taxDataDir, r.URL.Path[4:])
@@ -28,10 +28,14 @@ func (s *server) handleTax() http.HandlerFunc {
 			return
 		}
 		var td tax.Data
-		json.Unmarshal(b, &td)
+		err = json.Unmarshal(b, &td)
+		if err != nil {
+			s.InternalServerError(w, err)
+			return
+		}
 
 		res := response{
-			Type: "TAX_DATA",
+			Type: taxData,
 			Data: td,
 		}
 		j, err := json.Marshal(res)
