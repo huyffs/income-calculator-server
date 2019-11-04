@@ -12,7 +12,10 @@ import (
 
 func TestHandleTax(t *testing.T) {
 	r := mux.NewRouter()
-	taxDataDir, _ := filepath.Abs("./data/")
+	taxDataDir, err := filepath.Abs("./data/")
+	if err != nil {
+		t.Errorf("Test setup failed: %v", err)
+	}
 	logger := zaptest.NewLogger(t)
 	defer logger.Sync()
 	s := server{
@@ -33,7 +36,10 @@ func TestHandleTax(t *testing.T) {
 	}
 
 	for i, v := range statusCodeTests {
-		r, _ := http.NewRequest("GET", v.path, nil)
+		r, err := http.NewRequest("GET", v.path, nil)
+		if err != nil {
+			t.Errorf("Test setup failed: %v", err)
+		}
 		w := httptest.NewRecorder()
 		s.ServeHTTP(w, r)
 		res := w.Result()

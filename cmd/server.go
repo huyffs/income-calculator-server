@@ -7,6 +7,12 @@ import (
 	"go.uber.org/zap"
 )
 
+type responseType string
+
+const (
+	taxData responseType = "TAX_DATA"
+)
+
 type server struct {
 	router     *mux.Router
 	taxDataDir string
